@@ -584,6 +584,22 @@
                 return;
             }
 
+            // Секретные промокоды
+            const promoUpper = rawText.toUpperCase().replace(/\s+/g, '');
+            
+            if (promoUpper === '404') {
+                window.location.href = 'https://nuller.ru/404';
+                return;
+            }
+            if (promoUpper === 'NULLER') {
+                window.location.href = 'https://nuller.ru';
+                return;
+            }
+            if (promoUpper === '67') {
+                window.location.href = 'https://youtu.be/yo5CILhgvT4?list=RDyo5CILhgvT4';
+                return;
+            }
+
             const cleanText = rawText.toLowerCase().replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "");
 
             if (cleanText === "") {
@@ -602,7 +618,6 @@
             answerText.textContent = answers[index];
             answerBox.style.display = 'block';
 
-            // Эффект «вспышки» частиц при получении ответа
             spawnBurst(canvas.width / 2, canvas.height / 2);
         }
 
