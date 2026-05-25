@@ -4,35 +4,413 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>НЕТ</title>
+    <title>Ответ на вопрос</title>
     <style>
+        :root {
+            --bg-color: #0d0e12;
+            --card-bg: #161820;
+            --accent-color: #5865f2;
+            --accent-hover: #4752c4;
+            --text-main: #ffffff;
+            --text-muted: #8a8f98;
+            --border-color: #2b2e3a;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
         body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .main-container {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
         }
-        h1 {
-            font-size: 25vw;
+
+        .oracle-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        input[type="text"] {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-main);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 4px rgba(88, 101, 242, 0.15);
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .answer-box {
+            display: none;
+            margin-top: 20px;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .answer-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        .answer-text {
+            font-size: 42px;
             font-weight: 900;
-            color: #000000;
-            letter-spacing: -0.5vw;
-            user-select: none;
-            line-height: 1;
+            letter-spacing: -1px;
+            background: linear-gradient(45deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            width: 100%;
+            max-width: 1200px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        footer a, .modal-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            cursor: pointer;
+        }
+
+        footer a:hover, .modal-link:hover {
+            color: var(--accent-color);
+        }
+
+        .copyright {
+            font-size: 13px;
+            opacity: 0.7;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            text-align: left;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .modal-content p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
         }
     </style>
 </head>
 <body>
 
-    <h1>НЕТ</h1>
+    <main class="main-container">
+        <div class="oracle-card">
+            <h2>Задайте свой вопрос</h2>
+            <div class="input-group">
+                <input type="text" id="questionInput" placeholder="Стоит ли мне делать это..." autocomplete="off" oninput="resetError()">
+                <button onclick="getAnswer()">Получить ответ</button>
+            </div>
+            <div class="answer-box" id="answerBox">
+                <div class="answer-label">Вердикт оракула</div>
+                <div class="answer-text" id="answerText">ДА</div>
+            </div>
+        </div>
+    </main>
 
+        <!-- ОБНОВЛЕННЫЙ ФУТЕР -->
+    <footer style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <!-- Название сайта вынесено на самый верх и увеличено -->
+        <span style="font-size: 18px; font-weight: 700; color: var(--text-main); letter-spacing: -0.3px; margin-bottom: 4px;">
+            Ответ на вопрос
+        </span>
+        
+        <div class="footer-links" style="margin-top: 0;">
+            <a href="https://nuller.ru" target="_blank">Сайт разработчиков</a>
+            <span class="modal-link" onclick="openModal('privacyModal')">Политика конфиденциальности</span>
+            <span class="modal-link" onclick="openModal('termsModal')">Пользовательское соглашение</span>
+            <a href="mailto:nullercompany@gmail.com">nullercompany@gmail.com</a>
+        </div>
+        <div class="copyright">
+            © 2026 NULLER Company. Все права защищены.
+        </div>
+    </footer>
+
+
+    <div id="privacyModal" class="modal" onclick="closeModal(event, 'privacyModal')">
+        <div class="modal-content">
+            <span class="close-btn" onclick="document.getElementById('privacyModal').style.display='none'">&times;</span>
+            <h3>Политика конфиденциальности</h3>
+            <p>Настоящая политика конфиденциальности действует для сайта «Ответ на вопрос» проекта NULLER Company.</p>
+            <p><strong>Какие данные мы обрабатываем:</strong> Мы не собираем, не храним и не передаем ваши личные данные или тексты вводимых вопросов. Все вычисления, очистка текста и генерация сида происходят локально в вашем веб-браузере.</p>
+            <p><strong>Файлы Cookie:</strong> Данный сайт не использует сторонние трекеры и аналитические cookie-файлы для отслеживания пользователей.</p>
+        </div>
+    </div>
+
+    <div id="termsModal" class="modal" onclick="closeModal(event, 'termsModal')">
+        <div class="modal-content">
+            <span class="close-btn" onclick="document.getElementById('termsModal').style.display='none'">&times;</span>
+            <h3>Пользовательское соглашение</h3>
+            <p>Добро пожаловать на сайт «Ответ на вопрос» (проект NULLER Company).</p>
+            <p><strong>Условия использования:</strong> Данный сервис создан исключительно в развлекательных целях. Сгенерированные ответы не являются прямым руководством к действию.</p>
+            <p><strong>Отказ от ответственности:</strong> NULLER Company не несет ответственности за решения, принятые пользователем на основе ответов, полученных с помощью данного алгоритма.</p>
+        </div>
+    </div>
+        <script>
+        const answers = ["ДА", "НЕТ", "НЕИЗВЕСТНО", "ВОЗМОЖНО", "СКОРЕЕ НЕТ"];
+
+        // Сохраняем дефолтный плейсхолдер, чтобы возвращать его обратно
+        const defaultPlaceholder = "Стоит ли мне делать это...";
+
+        // Функция превращения строки в числовой сид (хэш cyrb128)
+        function cyrb128(str) {
+            let h1 = 1779033703, h2 = 3024733165, h3 = 3362454305, h4 = 502494325;
+            for (let i = 0, k; i < str.length; i++) {
+                k = str.charCodeAt(i);
+                h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+                h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+                h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+                h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+            }
+            h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+            h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+            h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213);
+            h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+            return (h1 ^ h2 ^ h3 ^ h4) >>> 0;
+        }
+
+        // Функция визуального отображения ошибки прямо на инпуте
+        function showInputError(message) {
+            const input = document.getElementById('questionInput');
+            const answerBox = document.getElementById('answerBox');
+            
+            answerBox.style.display = 'none'; // Скрываем прошлый ответ, если он был
+            input.value = ""; // Очищаем поле, чтобы показать плейсхолдер-ошибку
+            input.placeholder = message;
+            input.style.borderColor = "#ff4d4d";
+            input.style.backgroundColor = "rgba(255, 77, 77, 0.05)";
+            input.style.boxShadow = "0 0 0 4px rgba(255, 77, 77, 0.15)";
+        }
+
+        // Функция сброса ошибки в исходное состояние
+        function resetError() {
+            const input = document.getElementById('questionInput');
+            input.placeholder = defaultPlaceholder;
+            input.style.borderColor = "";
+            input.style.backgroundColor = "";
+            input.style.boxShadow = "";
+        }
+
+        // Главная функция обработки вопроса
+        function getAnswer() {
+            const input = document.getElementById('questionInput');
+            const answerBox = document.getElementById('answerBox');
+            const answerText = document.getElementById('answerText');
+
+            const rawText = input.value.trim();
+            
+            // Если поле абсолютно пустое
+            if (rawText === "") {
+                showInputError("Пожалуйста, введите ваш вопрос!");
+                return;
+            }
+
+            // Очистка строки: удаляем пробелы, знаки препинания, спецсимволы
+            const cleanText = rawText.toLowerCase().replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "");
+
+            // Если ввели только знаки препинания или пробелы (каша из букв пустая)
+            if (cleanText === "") {
+                showInputError("Ошибка: введите буквы или цифры!");
+                return;
+            }
+
+            // Если всё правильно, сбрасываем стили ошибок (на случай, если они были)
+            resetError();
+
+            // Генерируем детерминированный сид
+            const seed = cyrb128(cleanText);
+
+            // Находим индекс ответа
+            const index = seed % answers.length;
+            
+            // Перезапуск анимации появления
+            answerBox.style.display = 'none';
+            void answerBox.offsetWidth; 
+            
+            answerText.textContent = answers[index];
+            answerBox.style.display = 'block';
+        }
+
+        // Управление модальными окнами
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        
+        function closeModal(e, id) {
+            if (e.target === document.getElementById(id)) {
+                document.getElementById(id).style.display = 'none';
+            }
+        }
+
+        // Отправка вопроса по нажатию клавиши Enter
+        document.getElementById('questionInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                getAnswer();
+            }
+        });
+        
+        // Сбрасывать ошибку, если пользователь просто кликнул по полю ввода
+        document.getElementById('questionInput').addEventListener('focus', resetError);
+
+        // Блокировка правой кнопки мыши (контекстного меню)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Блокировка копирования и вырезания текста
+        document.addEventListener('copy', event => event.preventDefault());
+        document.addEventListener('cut', event => event.preventDefault());
+
+        // Блокировка горячих клавиш разработчика
+        document.addEventListener('keydown', function(e) {
+            // Отключаем F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+            // Отключаем Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (инструменты)
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+                return false;
+            }
+            // Отключаем Ctrl+U (просмотр исходного кода страницы)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return false;
+            }
+            // Отключаем Ctrl+S (сохранение страницы)
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
 </body>
 </html>
