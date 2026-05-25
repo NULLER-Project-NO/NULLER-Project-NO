@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Разрешаем ИИ-ботам сканировать наш сайт
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://otvet-na-vopros.ru
