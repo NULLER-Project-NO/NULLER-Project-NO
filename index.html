@@ -33,6 +33,103 @@
             align-items: center;
             overflow-x: hidden;
             padding: 20px;
+            position: relative;
+        }
+
+        /* ===== АНИМИРОВАННЫЙ ЗАДНИЙ ФОН ===== */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Градиентные пятна */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, #5865f2, transparent 70%);
+            top: -150px;
+            left: -150px;
+            animation: floatOrb1 20s ease-in-out infinite;
+        }
+
+        .glow-orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #7c3aed, transparent 70%);
+            bottom: -100px;
+            right: -100px;
+            animation: floatOrb2 25s ease-in-out infinite;
+        }
+
+        .glow-orb-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #06b6d4, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: floatOrb3 18s ease-in-out infinite;
+        }
+
+        @keyframes floatOrb1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(80px, 60px) scale(1.1); }
+            50% { transform: translate(40px, 120px) scale(0.95); }
+            75% { transform: translate(-30px, 50px) scale(1.05); }
+        }
+
+        @keyframes floatOrb2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-70px, -50px) scale(1.08); }
+            50% { transform: translate(-30px, -100px) scale(0.92); }
+            75% { transform: translate(40px, -40px) scale(1.03); }
+        }
+
+        @keyframes floatOrb3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.1; }
+            33% { transform: translate(-40%, -60%) scale(1.15); opacity: 0.15; }
+            66% { transform: translate(-60%, -40%) scale(0.9); opacity: 0.08; }
+        }
+
+        /* Сетка на фоне */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(88, 101, 242, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(88, 101, 242, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            pointer-events: none;
+            animation: gridPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== Всё остальное поверх фона ===== */
+        .main-container, footer, .modal {
+            position: relative;
+            z-index: 1;
         }
 
         .main-container {
@@ -45,13 +142,27 @@
         }
 
         .oracle-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
+            background-color: rgba(22, 24, 32, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(88, 101, 242, 0.15);
             border-radius: 24px;
             padding: 40px 30px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 80px rgba(88, 101, 242, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .oracle-card:hover {
+            border-color: rgba(88, 101, 242, 0.3);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(88, 101, 242, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         h2 {
@@ -93,12 +204,33 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+
+        button:active::after {
+            width: 400px;
+            height: 400px;
         }
 
         button:hover {
             background-color: var(--accent-hover);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(88, 101, 242, 0.35);
         }
 
         .answer-box {
@@ -119,9 +251,16 @@
             font-size: 42px;
             font-weight: 900;
             letter-spacing: -1px;
-            background: linear-gradient(45deg, #fff, var(--text-muted));
+            background: linear-gradient(135deg, #fff 0%, var(--accent-color) 50%, #7c3aed 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: gradientShift 4s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         @keyframes fadeIn {
@@ -223,6 +362,13 @@
 </head>
 <body>
 
+    <!-- ===== АНИМИРОВАННЫЙ ФОН ===== -->
+    <canvas id="bgCanvas"></canvas>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-orb glow-orb-3"></div>
+    <div class="grid-overlay"></div>
+
     <main class="main-container">
         <div class="oracle-card">
             <h2>Задайте свой вопрос</h2>
@@ -237,13 +383,10 @@
         </div>
     </main>
 
-        <!-- ОБНОВЛЕННЫЙ ФУТЕР -->
     <footer style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-        <!-- Название сайта вынесено на самый верх и увеличено -->
         <span style="font-size: 18px; font-weight: 700; color: var(--text-main); letter-spacing: -0.3px; margin-bottom: 4px;">
             Ответ на вопрос
         </span>
-        
         <div class="footer-links" style="margin-top: 0;">
             <a href="https://nuller.ru" target="_blank">Сайт разработчиков</a>
             <span class="modal-link" onclick="openModal('privacyModal')">Политика конфиденциальности</span>
@@ -254,7 +397,6 @@
             © 2026 NULLER Company. Все права защищены.
         </div>
     </footer>
-
 
     <div id="privacyModal" class="modal" onclick="closeModal(event, 'privacyModal')">
         <div class="modal-content">
@@ -275,13 +417,127 @@
             <p><strong>Отказ от ответственности:</strong> NULLER Company не несет ответственности за решения, принятые пользователем на основе ответов, полученных с помощью данного алгоритма.</p>
         </div>
     </div>
-        <script>
-        const answers = ["ДА", "НЕТ", "НЕИЗВЕСТНО", "ВОЗМОЖНО", "СКОРЕЕ НЕТ"];
 
-        // Сохраняем дефолтный плейсхолдер, чтобы возвращать его обратно
+    <script>
+        // ===== АНИМАЦИЯ ЧАСТИЦ НА CANVAS =====
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = -1000;
+        let mouseY = -1000;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.baseOpacity = this.opacity;
+                this.pulseSpeed = Math.random() * 0.02 + 0.005;
+                this.pulseOffset = Math.random() * Math.PI * 2;
+                // Случайный цвет: синий / фиолетовый / голубой
+                const colors = [
+                    [88, 101, 242],   // accent blue
+                    [124, 58, 237],   // purple
+                    [6, 182, 212],    // cyan
+                    [255, 255, 255],  // white
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update(time) {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Мягкое мерцание
+                this.opacity = this.baseOpacity + Math.sin(time * this.pulseSpeed + this.pulseOffset) * 0.15;
+
+                // Реакция на курсор мыши
+                const dx = this.x - mouseX;
+                const dy = this.y - mouseY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 150) {
+                    const force = (150 - dist) / 150;
+                    this.x += dx * force * 0.02;
+                    this.y += dy * force * 0.02;
+                    this.opacity = Math.min(1, this.opacity + force * 0.3);
+                }
+
+                // Обёртка по краям
+                if (this.x < -10) this.x = canvas.width + 10;
+                if (this.x > canvas.width + 10) this.x = -10;
+                if (this.y < -10) this.y = canvas.height + 10;
+                if (this.y > canvas.height + 10) this.y = -10;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${this.color[0]}, ${this.color[1]}, ${this.color[2]}, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        // Создаём частицы
+        const particleCount = Math.min(120, Math.floor(window.innerWidth * window.innerHeight / 12000));
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        // Линии между близкими частицами
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        const opacity = (1 - dist / 120) * 0.08;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(88, 101, 242, ${opacity})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        let time = 0;
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            time++;
+
+            particles.forEach(p => {
+                p.update(time);
+                p.draw();
+            });
+
+            drawConnections();
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // ===== ОСНОВНАЯ ЛОГИКА САЙТА =====
+        const answers = ["ДА", "НЕТ", "НЕИЗВЕСТНО", "ВОЗМОЖНО", "СКОРЕЕ НЕТ"];
         const defaultPlaceholder = "Стоит ли мне делать это...";
 
-        // Функция превращения строки в числовой сид (хэш cyrb128)
         function cyrb128(str) {
             let h1 = 1779033703, h2 = 3024733165, h3 = 3362454305, h4 = 502494325;
             for (let i = 0, k; i < str.length; i++) {
@@ -298,20 +554,17 @@
             return (h1 ^ h2 ^ h3 ^ h4) >>> 0;
         }
 
-        // Функция визуального отображения ошибки прямо на инпуте
         function showInputError(message) {
             const input = document.getElementById('questionInput');
             const answerBox = document.getElementById('answerBox');
-            
-            answerBox.style.display = 'none'; // Скрываем прошлый ответ, если он был
-            input.value = ""; // Очищаем поле, чтобы показать плейсхолдер-ошибку
+            answerBox.style.display = 'none';
+            input.value = "";
             input.placeholder = message;
             input.style.borderColor = "#ff4d4d";
             input.style.backgroundColor = "rgba(255, 77, 77, 0.05)";
             input.style.boxShadow = "0 0 0 4px rgba(255, 77, 77, 0.15)";
         }
 
-        // Функция сброса ошибки в исходное состояние
         function resetError() {
             const input = document.getElementById('questionInput');
             input.placeholder = defaultPlaceholder;
@@ -320,96 +573,86 @@
             input.style.boxShadow = "";
         }
 
-        // Главная функция обработки вопроса
         function getAnswer() {
             const input = document.getElementById('questionInput');
             const answerBox = document.getElementById('answerBox');
             const answerText = document.getElementById('answerText');
-
             const rawText = input.value.trim();
-            
-            // Если поле абсолютно пустое
+
             if (rawText === "") {
                 showInputError("Пожалуйста, введите ваш вопрос!");
                 return;
             }
 
-            // Очистка строки: удаляем пробелы, знаки препинания, спецсимволы
             const cleanText = rawText.toLowerCase().replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "");
 
-            // Если ввели только знаки препинания или пробелы (каша из букв пустая)
             if (cleanText === "") {
                 showInputError("Ошибка: введите буквы или цифры!");
                 return;
             }
 
-            // Если всё правильно, сбрасываем стили ошибок (на случай, если они были)
             resetError();
 
-            // Генерируем детерминированный сид
             const seed = cyrb128(cleanText);
-
-            // Находим индекс ответа
             const index = seed % answers.length;
-            
-            // Перезапуск анимации появления
+
             answerBox.style.display = 'none';
-            void answerBox.offsetWidth; 
-            
+            void answerBox.offsetWidth;
+
             answerText.textContent = answers[index];
             answerBox.style.display = 'block';
+
+            // Эффект «вспышки» частиц при получении ответа
+            spawnBurst(canvas.width / 2, canvas.height / 2);
         }
 
-        // Управление модальными окнами
+        // Мини-вспышка частиц при ответе
+        function spawnBurst(cx, cy) {
+            for (let i = 0; i < 15; i++) {
+                const p = new Particle();
+                p.x = cx + (Math.random() - 0.5) * 100;
+                p.y = cy + (Math.random() - 0.5) * 100;
+                p.speedX = (Math.random() - 0.5) * 3;
+                p.speedY = (Math.random() - 0.5) * 3;
+                p.size = Math.random() * 3 + 1;
+                p.opacity = 0.8;
+                p.baseOpacity = 0.8;
+                p.color = [88, 101, 242];
+                particles.push(p);
+            }
+            // Удаляем лишние через 3 секунды, чтобы не копить
+            setTimeout(() => {
+                particles.splice(particleCount, 15);
+            }, 3000);
+        }
+
         function openModal(id) {
             document.getElementById(id).style.display = 'flex';
         }
-        
+
         function closeModal(e, id) {
             if (e.target === document.getElementById(id)) {
                 document.getElementById(id).style.display = 'none';
             }
         }
 
-        // Отправка вопроса по нажатию клавиши Enter
         document.getElementById('questionInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 getAnswer();
             }
         });
-        
-        // Сбрасывать ошибку, если пользователь просто кликнул по полю ввода
+
         document.getElementById('questionInput').addEventListener('focus', resetError);
 
-        // Блокировка правой кнопки мыши (контекстного меню)
         document.addEventListener('contextmenu', event => event.preventDefault());
-
-        // Блокировка копирования и вырезания текста
         document.addEventListener('copy', event => event.preventDefault());
         document.addEventListener('cut', event => event.preventDefault());
 
-        // Блокировка горячих клавиш разработчика
         document.addEventListener('keydown', function(e) {
-            // Отключаем F12
-            if (e.key === 'F12') {
-                e.preventDefault();
-                return false;
-            }
-            // Отключаем Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (инструменты)
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
-                e.preventDefault();
-                return false;
-            }
-            // Отключаем Ctrl+U (просмотр исходного кода страницы)
-            if (e.ctrlKey && e.key === 'u') {
-                e.preventDefault();
-                return false;
-            }
-            // Отключаем Ctrl+S (сохранение страницы)
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                return false;
-            }
+            if (e.key === 'F12') { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.key === 'u') { e.preventDefault(); return false; }
+            if (e.ctrlKey && e.key === 's') { e.preventDefault(); return false; }
         });
     </script>
 </body>
