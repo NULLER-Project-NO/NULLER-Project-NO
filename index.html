@@ -1196,6 +1196,74 @@
 
         document.getElementById('questionInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') getAnswer(); });
         document.getElementById('questionInput').addEventListener('focus', resetError);
+
+        // ==========================================
+        // СИСТЕМА ЗАЩИТЫ ИСХОДНОГО КОДА NULLER COMPANY
+        // ==========================================
+        
+        // 1. Блокировка контекстного меню (Правая кнопка мыши)
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 2. Блокировка выделения текста и картинок (Защита от копирования)
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 3. Блокировка перетаскивания элементов страницы
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // 4. Блокировка горячих клавиш инспектирования кода
+        document.addEventListener('keydown', function(e) {
+            // Блокируем клавишу F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Блокируем Ctrl+U (Просмотр исходного кода)
+            if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Блокируем Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (Панель разработчика)
+            if (e.ctrlKey && e.shiftKey && (
+                e.key === 'I' || e.key === 'i' || e.keyCode === 73 ||
+                e.key === 'J' || e.key === 'j' || e.keyCode === 74 ||
+                e.key === 'C' || e.key === 'c' || e.keyCode === 67
+            )) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Блокируем Ctrl+S (Сохранение страницы на диск)
+            if (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Блокируем Ctrl+H (Просмотр истории/исходников в некоторых браузерах)
+            if (e.ctrlKey && (e.key === 'h' || e.key === 'H' || e.keyCode === 72)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // 5. Продвинутая защита: Анти-отладчик (Зацикливание консоли)
+        // Если продвинутый пользователь всё же откроет консоль через меню браузера, 
+        // этот скрипт начнет бесконечно спамить отладку, замораживая вкладку DevTools.
+        setInterval(function() {
+            (function() {
+                return false;
+            }['constructor']('debugger')());
+        }, 50);
     </script>
 </body>
 </html>
