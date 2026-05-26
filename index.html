@@ -109,20 +109,20 @@
         .logo-icon {
             width: 32px;
             height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            object-fit: contain;
+            border-radius: 6px;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.3));
         }
 
-        .logo-icon svg {
-            width: 100%;
-            height: 100%;
-            animation: logoRotate 20s linear infinite;
+        .logo:hover .logo-icon {
+            transform: scale(1.1) rotate(-5deg);
+            filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.6));
         }
 
-        @keyframes logoRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .logo {
+            cursor: pointer;
+            user-select: none;
         }
 
         .top-stats {
@@ -683,13 +683,7 @@
     <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
     <header class="top-bar">
         <div class="logo">
-            <div class="logo-icon">
-                <svg viewBox="0 0 32 32" fill="none">
-                    <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" stroke="#06b6d4" stroke-width="1.8" fill="none"/>
-                    <polygon points="16,8 23,12 23,20 16,24 9,20 9,12" stroke="#5865f2" stroke-width="1.5" fill="none"/>
-                    <circle cx="16" cy="16" r="2" fill="#7c3aed"/>
-                </svg>
-            </div>
+            <img src="favicon.png" alt="Логотип" class="logo-icon">
             <span>Ответ на вопрос</span>
         </div>
         <div class="top-stats">
