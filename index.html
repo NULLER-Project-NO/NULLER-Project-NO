@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta name="description" content="Уникальный онлайн-сервис «Ответ на вопрос» от NULLER Company. Задайте любой вопрос и получите мгновенный детерминированный ответ на основе математического алгоритма хэширования строк.">
-    <meta name="keywords" content="ответ на вопрос, оракул онлайн, да нет неизвестно, предсказание, nuller company, генератор ответов">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://otvet-na-vopros.ru">
-    <meta property="og:title" content="Ответ на вопрос — первое онлайн приложение от NULLER">
-    <meta property="og:description" content="Задайте свой вопрос и получите точный математический вердикт: ДА, НЕТ, ВОЗМОЖНО или СКОРЕЕ НЕТ.">
-    <meta property="og:image" content="https://otvet-na-vopros.ru/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="favicon.png">
     <title>Ответ на вопрос</title>
     <style>
         :root {
@@ -21,7 +13,6 @@
             --text-main: #ffffff;
             --text-muted: #8a8f98;
             --border-color: #2b2e3a;
-            --input-bg: #1a1c25;
         }
 
         * {
@@ -37,1165 +28,235 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* ===== ФОН С ШЕСТИУГОЛЬНИКАМИ ===== */
-        #bgCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* Плавающие световые пятна остаются */
-        .glow-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .glow-orb-1 {
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, #5865f2, transparent 70%);
-            top: -150px; left: -150px;
-            animation: floatOrb1 25s ease-in-out infinite;
-        }
-
-        .glow-orb-2 {
-            width: 500px; height: 500px;
-            background: radial-gradient(circle, #7c3aed, transparent 70%);
-            bottom: -100px; right: -100px;
-            animation: floatOrb2 30s ease-in-out infinite;
-        }
-
-        @keyframes floatOrb1 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(60px, 100px); }
-        }
-        @keyframes floatOrb2 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-50px, -80px); }
-        }
-
-        /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
-        .top-bar {
-            position: relative;
-            z-index: 10;
-            display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 28px;
-            width: 100%;
+            overflow-x: hidden;
+            padding: 20px;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: 16px;
-            letter-spacing: -0.3px;
-            color: var(--text-main);
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-            border-radius: 6px;
-            transition: transform 0.3s ease, filter 0.3s ease;
-            filter: drop-shadow(0 0 8px rgba(88, 101, 242, 0.3));
-        }
-
-        .logo:hover .logo-icon {
-            transform: scale(1.1) rotate(-5deg);
-            filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.6));
-        }
-
-        .logo {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .top-stats {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .top-stat {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 100px;
-            transition: all 0.2s ease;
-        }
-
-        .top-stat:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(88, 101, 242, 0.3);
-        }
-
-        .top-stat-value {
-            color: var(--text-main);
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .top-stat-value.bump {
-            animation: counterBump 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes counterBump {
-            0% { transform: scale(1); color: var(--text-main); }
-            40% { transform: scale(1.3); color: #5865f2; }
-            100% { transform: scale(1); color: var(--text-main); }
-        }
-
-        /* ===== ОСНОВНАЯ ЗОНА ===== */
+        /* Основной контейнер */
         .main-container {
             flex: 1;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-            min-height: calc(100vh - 200px);
-        }
-
-        .hero-title {
-            font-size: 56px;
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #ffffff 0%, #b4b8c5 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-        }
-
-        .hero-subtitle {
-            font-size: 15px;
-            color: var(--text-muted);
-            margin-bottom: 36px;
-            text-align: center;
-            letter-spacing: 0.3px;
-        }
-
-        /* ===== ПОЛЕ ВВОДА В СТИЛЕ GROK ===== */
-        .input-wrapper {
             width: 100%;
-            max-width: 720px;
-            position: relative;
+            max-width: 500px;
         }
 
-        .input-container {
-            background: var(--input-bg);
+        .oracle-card {
+            background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 28px;
-            padding: 6px 6px 6px 22px;
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Инпуты и кнопка */
+        .input-group {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.25s ease;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .input-container:focus-within {
-            border-color: rgba(88, 101, 242, 0.5);
-            box-shadow: 0 0 0 4px rgba(88, 101, 242, 0.1), 0 8px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .input-container.error {
-            border-color: #ff4d4d;
-            box-shadow: 0 0 0 4px rgba(255, 77, 77, 0.1), 0 8px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        #questionInput {
-            background: transparent;
-            border: none;
-            outline: none;
+        input[type="text"] {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
             color: var(--text-main);
             font-size: 16px;
-            flex: 1;
-            padding: 16px 0;
+            outline: none;
+            transition: all 0.2s ease;
         }
 
-        #questionInput::placeholder {
-            color: var(--text-muted);
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 4px rgba(88, 101, 242, 0.15);
         }
 
-        .ask-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--text-main);
-            color: var(--bg-color);
+        button {
+            background-color: var(--accent-color);
+            color: #ffffff;
             border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ask-btn:hover:not(:disabled) {
-            background: var(--accent-color);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .ask-btn:active:not(:disabled) {
-            transform: scale(0.95);
-        }
-
-        .ask-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .ask-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Подсказки под полем ввода */
-        .quick-prompts {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .quick-prompt {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 100px;
-            padding: 8px 16px;
-            font-size: 13px;
-            color: var(--text-muted);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
-            user-select: none;
         }
 
-        .quick-prompt:hover {
-            background: rgba(88, 101, 242, 0.1);
-            border-color: rgba(88, 101, 242, 0.4);
-            color: var(--text-main);
+        button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
         }
 
-        /* ===== ЛОАДЕР ===== */
-        .thinking-box {
-            display: none;
-            margin-top: 40px;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
+        button:active {
+            transform: translateY(1px);
         }
 
-        .thinking-box.active {
-            display: flex;
-            animation: fadeIn 0.3s ease forwards;
-        }
-
-        .thinking-orb {
-            width: 50px;
-            height: 50px;
-            position: relative;
-        }
-
-        .thinking-orb::before,
-        .thinking-orb::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: #06b6d4;
-            border-right-color: #5865f2;
-            animation: thinkSpin 1s linear infinite;
-        }
-
-        .thinking-orb::after {
-            border-top-color: #7c3aed;
-            border-right-color: transparent;
-            animation: thinkSpin 1.5s linear infinite reverse;
-            inset: 6px;
-        }
-
-        @keyframes thinkSpin {
-            to { transform: rotate(360deg); }
-        }
-
-        .thinking-text {
-            font-size: 14px;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-
-        .thinking-dots::after {
-            content: '';
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-
-        @keyframes dots {
-            0%   { content: ''; }
-            25%  { content: '.'; }
-            50%  { content: '..'; }
-            75%  { content: '...'; }
-            100% { content: ''; }
-        }
-
-        /* ===== ОТВЕТ ===== */
+        /* Секция с ответом */
         .answer-box {
             display: none;
-            margin-top: 40px;
-            text-align: center;
-            position: relative;
-        }
-
-        .answer-box.reveal {
-            display: block;
-            animation: answerReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes answerReveal {
-            0% {
-                opacity: 0;
-                transform: translateY(20px) scale(0.9);
-                filter: blur(15px);
-            }
-            60% {
-                filter: blur(2px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-                filter: blur(0);
-            }
+            margin-top: 20px;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .answer-label {
-            font-size: 12px;
+            font-size: 14px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
         }
 
         .answer-text {
-            font-size: 64px;
+            font-size: 42px;
             font-weight: 900;
-            letter-spacing: -2px;
-            background: linear-gradient(135deg, #06b6d4 0%, #5865f2 50%, #7c3aed 100%);
-            background-size: 200% 200%;
+            letter-spacing: -1px;
+            background: linear-gradient(45deg, #fff, var(--text-muted));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease-in-out infinite;
-            display: inline-block;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .answer-glow {
-            display: none;
-            width: 300px;
-            height: 300px;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(88,101,242,0.25), transparent 70%);
-            filter: blur(50px);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .answer-glow.active {
-            display: block;
-            animation: glowPulse 2.5s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.2); }
-        }
-
+        /* Анимация появления */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* ===== ИСТОРИЯ ===== */
-        .history-section {
-            margin-top: 40px;
+        /* Подвал сайта (Футер) */
+        footer {
             width: 100%;
-            max-width: 720px;
-        }
-
-        .history-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            padding: 10px;
-            border-radius: 8px;
-            transition: color 0.2s, background 0.2s;
-            user-select: none;
-        }
-
-        .history-toggle:hover {
-            color: var(--text-main);
-            background: rgba(255,255,255,0.03);
-        }
-
-        .history-toggle .arrow {
-            transition: transform 0.3s ease;
-            font-size: 9px;
-        }
-
-        .history-toggle.open .arrow {
-            transform: rotate(180deg);
-        }
-
-        .history-list {
-            display: none;
-            margin-top: 12px;
-            max-height: 220px;
-            overflow-y: auto;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.04);
-        }
-
-        .history-list.open {
-            display: block;
-            animation: fadeIn 0.3s ease forwards;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 18px;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .history-question {
-            color: var(--text-muted);
-            flex: 1;
-            text-align: left;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin-right: 12px;
-        }
-
-        .history-answer {
-            font-weight: 700;
-            font-size: 11px;
-            padding: 4px 11px;
-            border-radius: 100px;
-            background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(88,101,242,0.15));
-            color: #06b6d4;
-            white-space: nowrap;
-            letter-spacing: 0.3px;
-        }
-
-        .history-empty {
-            padding: 24px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .history-list::-webkit-scrollbar { width: 4px; }
-        .history-list::-webkit-scrollbar-track { background: transparent; }
-        .history-list::-webkit-scrollbar-thumb { background: rgba(88,101,242,0.3); border-radius: 4px; }
-
-        /* ===== ТОСТЫ ===== */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 2000;
+            max-width: 1200px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 40px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .toast {
-            background: rgba(22, 24, 32, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 16px;
-            padding: 14px 20px;
-            color: var(--text-main);
-            font-size: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            animation: toastIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            pointer-events: auto;
-            max-width: 320px;
-        }
-
-        .toast.out { animation: toastOut 0.4s ease forwards; }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(100px) scale(0.9); }
-            to { opacity: 1; transform: translateX(0) scale(1); }
-        }
-        @keyframes toastOut {
-            to { opacity: 0; transform: translateX(100px) scale(0.9); }
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            padding: 20px;
+            align-items: center;
+            gap: 12px;
             text-align: center;
-            font-size: 12px;
+            font-size: 14px;
             color: var(--text-muted);
         }
 
         .footer-links {
             display: flex;
-            gap: 18px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-bottom: 10px;
         }
 
-        footer a, .modal-link {
-            color: var(--text-muted);
+        footer a {
+            color: var(--text-main);
             text-decoration: none;
+            font-weight: 500;
             transition: color 0.2s ease;
-            cursor: pointer;
         }
 
-        footer a:hover, .modal-link:hover {
-            color: #06b6d4;
+        footer a:hover {
+            color: var(--accent-color);
         }
 
-        /* ===== МОДАЛКИ ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
+        .copyright {
+            font-size: 13px;
+            opacity: 0.7;
         }
 
-        .modal-content {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-            text-align: left;
-        }
-
-        .modal-content h3 {
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .modal-content p {
-            color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-        .close-btn:hover { color: var(--text-main); }
-
-        /* ===== АДАПТИВ ===== */
-        @media (max-width: 600px) {
-            .hero-title { font-size: 38px; }
-            .answer-text { font-size: 44px; }
-            .top-bar { padding: 14px 16px; }
-            .top-stats { gap: 8px; }
-            .top-stat { padding: 6px 10px; font-size: 11px; }
-            .toast-container { top: 10px; right: 10px; left: 10px; }
-            .toast { max-width: 100%; }
+        @media (max-width: 480px) {
+            .oracle-card {
+                padding: 30px 20px;
+            }
+            .answer-text {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="bgCanvas"></canvas>
-    <div class="glow-orb glow-orb-1"></div>
-    <div class="glow-orb glow-orb-2"></div>
-
-    <div class="toast-container" id="toastContainer"></div>
-
-    <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
-    <header class="top-bar">
-        <div class="logo">
-            <img src="favicon.png" alt="Логотип" class="logo-icon">
-            <span>Ответ на вопрос</span>
-        </div>
-        <div class="top-stats">
-            <div class="top-stat">
-                <span>Всего:</span>
-                <span class="top-stat-value" id="globalCounter">···</span>
-            </div>
-            <div class="top-stat">
-                <span>Сессия:</span>
-                <span class="top-stat-value" id="sessionCounter">0</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- ОСНОВНАЯ ЗОНА -->
+    <!-- Основной контент страницы -->
     <main class="main-container">
-        <h1 class="hero-title">Тестовая версия 0.3.1</h1>
-        <p class="hero-subtitle">Это тестовая версия приложения, в будущем она может меняться! Следите за новостями.</p>
-
-        <div class="input-wrapper">
-            <div class="input-container" id="inputContainer">
-                <input type="text" id="questionInput" placeholder="Стоит ли мне делать это.." autocomplete="off" oninput="resetError()">
-                <button class="ask-btn" id="askBtn" onclick="getAnswer()" aria-label="Получить ответ">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="19" x2="12" y2="5"></line>
-                        <polyline points="5 12 12 5 19 12"></polyline>
-                    </svg>
-                </button>
+        <div class="oracle-card">
+            <h2>Задайте свой вопрос</h2>
+            
+            <div class="input-group">
+                <input type="text" id="questionInput" placeholder="Стоит ли мне делать это..." autocomplete="off">
+                <button onclick="getAnswer()">Получить ответ</button>
             </div>
 
-            <div class="quick-prompts">
-                <span class="quick-prompt" onclick="usePrompt('Стоит ли мне сегодня выходить из дома')">Стоит ли выходить</span>
-                <span class="quick-prompt" onclick="usePrompt('Будет ли удача на моей стороне')">Будет ли удача</span>
-                <span class="quick-prompt" onclick="usePrompt('Стоит ли рисковать')">Стоит ли рисковать</span>
-            </div>
-        </div>
-
-        <div class="thinking-box" id="thinkingBox">
-            <div class="thinking-orb"></div>
-            <span class="thinking-text">Анализирую<span class="thinking-dots"></span></span>
-        </div>
-
-        <div style="position: relative;">
+            <!-- Скрытый блок, который будет красиво появляться -->
             <div class="answer-box" id="answerBox">
-                <div class="answer-label">Ответ на ваш вопрос</div>
-                <div class="answer-text" id="answerText"></div>
-            </div>
-            <div class="answer-glow" id="answerGlow"></div>
-        </div>
-
-        <div class="history-section">
-            <div class="history-toggle" id="historyToggle" onclick="toggleHistory()">
-                <span>История вопросов</span>
-                <span class="arrow">▼</span>
-            </div>
-            <div class="history-list" id="historyList">
-                <div class="history-empty" id="historyEmpty">Пока нет вопросов</div>
+                <div class="answer-label">Вердикт оракула</div>
+                <div class="answer-text" id="answerText">ДА</div>
             </div>
         </div>
     </main>
 
+    <!-- Футер -->
     <footer>
         <div class="footer-links">
+            <span><strong>Ответ на вопрос</strong></span>
             <a href="https://nuller.ru" target="_blank">Сайт разработчиков</a>
-            <span class="modal-link" onclick="openModal('privacyModal')">Конфиденциальность</span>
-            <span class="modal-link" onclick="openModal('termsModal')">Условия</span>
-            <a href="mailto:nullercompany@gmail.com">Контакты</a>
+            <a href="mailto:nullercompany@gmail.com">nullercompany@gmail.com</a>
         </div>
-        <div>© 2026 NULLER Company</div>
+        <div class="copyright">
+            © 2026 NULLER Company. Все права защищены.
+        </div>
     </footer>
 
-    <div id="privacyModal" class="modal" onclick="closeModal(event, 'privacyModal')">
-        <div class="modal-content">
-            <span class="close-btn" onclick="document.getElementById('privacyModal').style.display='none'">&times;</span>
-            <h3>Политика конфиденциальности</h3>
-            <p>Настоящая политика конфиденциальности действует для сайта «Ответ на вопрос» проекта NULLER Company.</p>
-            <p><strong>Какие данные мы обрабатываем:</strong> Мы не собираем, не храним и не передаем ваши личные данные или тексты вводимых вопросов. Все вычисления, очистка текста и генерация сида происходят локально в вашем веб-браузере.</p>
-            <p><strong>Файлы Cookie:</strong> Данный сайт не использует сторонние трекеры и аналитические cookie-файлы для отслеживания пользователей.</p>
-        </div>
-    </div>
-
-    <div id="termsModal" class="modal" onclick="closeModal(event, 'termsModal')">
-        <div class="modal-content">
-            <span class="close-btn" onclick="document.getElementById('termsModal').style.display='none'">&times;</span>
-            <h3>Пользовательское соглашение</h3>
-            <p>Добро пожаловать на сайт «Ответ на вопрос» (проект NULLER Company).</p>
-            <p><strong>Условия использования:</strong> Данный сервис создан исключительно в развлекательных целях.</p>
-            <p><strong>Отказ от ответственности:</strong> NULLER Company не несет ответственности за решения, принятые пользователем на основе ответов.</p>
-        </div>
-    </div>
-
-    <!-- FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
+    <!-- Логика генерации случайного ответа -->
     <script>
-        // ===== FIREBASE — ВСТАВЬ СВОЙ КОНФИГ =====
-        const firebaseConfig = {
-            apiKey: "AIzaSyCBUuEU-PftF7bX_RP_pl3fXij3iU87F3A",
-            authDomain: "otvet-na-vopros.firebaseapp.com",
-            databaseURL: "https://otvet-na-vopros-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "otvet-na-vopros",
-            storageBucket: "otvet-na-vopros.firebasestorage.app",
-            messagingSenderId: "476829332695",
-            appId: "1:476829332695:web:e43ab1f8c1dcfed0ef2c92"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const counterRef = db.ref('totalQuestions');
-
-        let globalCount = 0;
-        let sessionCount = 0;
-
-        counterRef.on('value', (snapshot) => {
-            globalCount = snapshot.val() || 0;
-            animateCounter('globalCounter', globalCount);
-        });
-
-        function animateCounter(elementId, targetValue) {
-            const el = document.getElementById(elementId);
-            const currentText = el.textContent.replace(/\D/g, '');
-            const currentValue = parseInt(currentText) || 0;
-            if (currentValue === targetValue) {
-                el.textContent = targetValue.toLocaleString('ru-RU');
-                bumpCounter(elementId);
-                return;
-            }
-            const diff = targetValue - currentValue;
-            const steps = Math.min(Math.abs(diff), 30);
-            const stepValue = diff / steps;
-            let step = 0;
-            const interval = setInterval(() => {
-                step++;
-                const value = Math.round(currentValue + stepValue * step);
-                el.textContent = value.toLocaleString('ru-RU');
-                if (step >= steps) {
-                    el.textContent = targetValue.toLocaleString('ru-RU');
-                    clearInterval(interval);
-                    bumpCounter(elementId);
-                }
-            }, 30);
-        }
-
-        function bumpCounter(elementId) {
-            const el = document.getElementById(elementId);
-            el.classList.remove('bump');
-            void el.offsetWidth;
-            el.classList.add('bump');
-        }
-
-        function incrementGlobalCounter() {
-            counterRef.transaction((current) => (current || 0) + 1);
-        }
-
-        // ===== ШЕСТИУГОЛЬНИКИ НА ФОНЕ =====
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
-        let hexagons = [];
-        let mouseX = -1000;
-        let mouseY = -1000;
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initHexagons();
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-
-        class Hexagon {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 18 + 8;
-                this.speedX = (Math.random() - 0.5) * 0.3;
-                this.speedY = (Math.random() - 0.5) * 0.3;
-                this.rotation = Math.random() * Math.PI * 2;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.008;
-                this.baseOpacity = Math.random() * 0.25 + 0.05;
-                this.opacity = this.baseOpacity;
-                this.pulseSpeed = Math.random() * 0.015 + 0.005;
-                this.pulseOffset = Math.random() * Math.PI * 2;
-
-                // Палитра цветов
-                const colors = [
-                    [6, 182, 212],    // cyan
-                    [88, 101, 242],   // blue
-                    [124, 58, 237],   // purple
-                    [255, 255, 255],  // white
-                ];
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.filled = Math.random() > 0.85; // ~15% заполненных
-            }
-
-            update(time) {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.rotation += this.rotationSpeed;
-                this.opacity = this.baseOpacity + Math.sin(time * this.pulseSpeed + this.pulseOffset) * 0.1;
-
-                // Реакция на мышь
-                const dx = this.x - mouseX;
-                const dy = this.y - mouseY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 180) {
-                    const force = (180 - dist) / 180;
-                    this.x += dx * force * 0.025;
-                    this.y += dy * force * 0.025;
-                    this.opacity = Math.min(0.6, this.opacity + force * 0.3);
-                    this.rotation += force * 0.05;
-                }
-
-                // Wrap around
-                const margin = 50;
-                if (this.x < -margin) this.x = canvas.width + margin;
-                if (this.x > canvas.width + margin) this.x = -margin;
-                if (this.y < -margin) this.y = canvas.height + margin;
-                if (this.y > canvas.height + margin) this.y = -margin;
-            }
-
-            draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-
-                ctx.beginPath();
-                for (let i = 0; i < 6; i++) {
-                    const angle = (Math.PI / 3) * i;
-                    const px = this.size * Math.cos(angle);
-                    const py = this.size * Math.sin(angle);
-                    if (i === 0) ctx.moveTo(px, py);
-                    else ctx.lineTo(px, py);
-                }
-                ctx.closePath();
-
-                const [r, g, b] = this.color;
-                if (this.filled) {
-                    ctx.fillStyle = `rgba(${r},${g},${b},${this.opacity * 0.4})`;
-                    ctx.fill();
-                }
-                ctx.strokeStyle = `rgba(${r},${g},${b},${this.opacity})`;
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-
-                ctx.restore();
-            }
-        }
-
-        let hexCount;
-        function initHexagons() {
-            hexagons = [];
-            hexCount = Math.min(45, Math.floor(window.innerWidth * window.innerHeight / 35000));
-            for (let i = 0; i < hexCount; i++) hexagons.push(new Hexagon());
-        }
-        initHexagons();
-
-        // Линии между близкими шестиугольниками
-        function drawConnections() {
-            for (let i = 0; i < hexagons.length; i++) {
-                for (let j = i + 1; j < hexagons.length; j++) {
-                    const dx = hexagons[i].x - hexagons[j].x;
-                    const dy = hexagons[i].y - hexagons[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 180) {
-                        ctx.beginPath();
-                        ctx.moveTo(hexagons[i].x, hexagons[i].y);
-                        ctx.lineTo(hexagons[j].x, hexagons[j].y);
-                        ctx.strokeStyle = `rgba(6, 182, 212, ${(1 - dist / 180) * 0.08})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        let time = 0;
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            time++;
-            hexagons.forEach(h => { h.update(time); h.draw(); });
-            drawConnections();
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // ===== ВСПЫШКА ШЕСТИУГОЛЬНИКОВ =====
-        function spawnBurst(cx, cy) {
-            for (let i = 0; i < 10; i++) {
-                const h = new Hexagon();
-                h.x = cx + (Math.random() - 0.5) * 100;
-                h.y = cy + (Math.random() - 0.5) * 100;
-                h.speedX = (Math.random() - 0.5) * 4;
-                h.speedY = (Math.random() - 0.5) * 4;
-                h.size = Math.random() * 15 + 5;
-                h.opacity = 0.7;
-                h.baseOpacity = 0.7;
-                h.color = [6, 182, 212];
-                h.rotationSpeed = (Math.random() - 0.5) * 0.1;
-                hexagons.push(h);
-            }
-            setTimeout(() => hexagons.splice(hexCount, 10), 3000);
-        }
-
-        // ===== ТОСТЫ =====
-        function showToast(message, duration = 3000) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('out');
-                setTimeout(() => toast.remove(), 400);
-            }, duration);
-        }
-
-        if (!sessionStorage.getItem('welcomed')) {
-            sessionStorage.setItem('welcomed', '1');
-            setTimeout(() => showToast('✨ Добро пожаловать! Задайте свой первый вопрос.', 4000), 1000);
-        }
-
-        // ===== ИСТОРИЯ =====
-        let history = JSON.parse(localStorage.getItem('oracleHistory') || '[]');
-
-        function renderHistory() {
-            const list = document.getElementById('historyList');
-            const empty = document.getElementById('historyEmpty');
-            list.querySelectorAll('.history-item').forEach(el => el.remove());
-            if (history.length === 0) {
-                empty.style.display = 'block';
-            } else {
-                empty.style.display = 'none';
-                history.slice(-50).reverse().forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'history-item';
-                    div.innerHTML = `<span class="history-question">${escapeHtml(item.q)}</span><span class="history-answer">${item.a}</span>`;
-                    list.appendChild(div);
-                });
-            }
-        }
-
-        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-
-        function toggleHistory() {
-            document.getElementById('historyToggle').classList.toggle('open');
-            document.getElementById('historyList').classList.toggle('open');
-        }
-
-        renderHistory();
-
-        // ===== ОСНОВНАЯ ЛОГИКА =====
         const answers = ["ДА", "НЕТ", "НЕИЗВЕСТНО", "ВОЗМОЖНО", "СКОРЕЕ НЕТ"];
-        const defaultPlaceholder = "Стоит ли мне делать это...";
-        let isProcessing = false;
-
-        function cyrb128(str) {
-            let h1 = 1779033703, h2 = 3024733165, h3 = 3362454305, h4 = 502494325;
-            for (let i = 0, k; i < str.length; i++) {
-                k = str.charCodeAt(i);
-                h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
-                h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
-                h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
-                h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
-            }
-            h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
-            h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
-            h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213);
-            h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
-            return (h1 ^ h2 ^ h3 ^ h4) >>> 0;
-        }
-
-        function showInputError(message) {
-            const input = document.getElementById('questionInput');
-            const container = document.getElementById('inputContainer');
-            document.getElementById('answerBox').style.display = 'none';
-            document.getElementById('answerBox').classList.remove('reveal');
-            document.getElementById('thinkingBox').classList.remove('active');
-            input.value = "";
-            input.placeholder = message;
-            container.classList.add('error');
-        }
-
-        function resetError() {
-            const input = document.getElementById('questionInput');
-            const container = document.getElementById('inputContainer');
-            input.placeholder = defaultPlaceholder;
-            container.classList.remove('error');
-        }
-
-        function usePrompt(text) {
-            const input = document.getElementById('questionInput');
-            input.value = text;
-            input.focus();
-        }
-
-        // ===== ЗАЩИТА ОТ СПАМА =====
-        const RATE_LIMIT_MS = 1500; // минимум 1.5 сек между запросами
-        let lastAskTime = 0;
-
-        function checkRateLimit() {
-            const now = Date.now();
-            if (now - lastAskTime < RATE_LIMIT_MS) {
-                return false;
-            }
-            lastAskTime = now;
-            return true;
-        }
 
         function getAnswer() {
-            if (isProcessing) return;
-
-            if (!checkRateLimit()) {
-                showToast('Слишком много запросов.', 2000);
-                return;
-            }
-
             const input = document.getElementById('questionInput');
             const answerBox = document.getElementById('answerBox');
             const answerText = document.getElementById('answerText');
-            const thinkingBox = document.getElementById('thinkingBox');
-            const answerGlow = document.getElementById('answerGlow');
-            const askBtn = document.getElementById('askBtn');
-            const rawText = input.value.trim();
 
-            if (rawText === "") {
-                showInputError("Пожалуйста, введите ваш вопрос!");
+            // Проверка на пустой ввод
+            if (input.value.trim() === "") {
+                alert("Пожалуйста, введите ваш вопрос!");
                 return;
             }
 
-            // Защита от слишком длинных вопросов
-            if (rawText.length > 500) {
-                showInputError("Вопрос слишком длинный! Максимум 500 символов.");
-                return;
-            }
-
-            const promoUpper = rawText.toUpperCase().replace(/\s+/g, '');
-            if (promoUpper === '404') { window.location.href = 'https://nuller.ru/404'; return; }
-            if (promoUpper === 'NULLER') { window.location.href = 'https://nuller.ru'; return; }
-            if (promoUpper === '67') { window.location.href = 'https://youtu.be/yo5CILhgvT4?list=RDyo5CILhgvT4'; return; }
-
-            const cleanText = rawText.toLowerCase().replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "");
-            if (cleanText === "") {
-                showInputError("Ошибка: введите буквы или цифры!");
-                return;
-            }
-
-            resetError();
-            isProcessing = true;
-            askBtn.disabled = true;
-
+            // Перезапуск анимации появления при каждом клике
             answerBox.style.display = 'none';
-            answerBox.classList.remove('reveal');
-            answerGlow.classList.remove('active');
-            thinkingBox.classList.add('active');
-
-            const seed = cyrb128(cleanText);
-            const index = seed % answers.length;
-            const answer = answers[index];
-
-            const delay = 1200 + Math.random() * 600;
-
-            setTimeout(() => {
-                thinkingBox.classList.remove('active');
-                answerText.textContent = answer;
-                answerBox.classList.add('reveal');
-                answerBox.style.display = 'block';
-                answerGlow.classList.add('active');
-
-                isProcessing = false;
-                askBtn.disabled = false;
-
-                incrementGlobalCounter();
-
-                sessionCount++;
-                document.getElementById('sessionCounter').textContent = sessionCount;
-                bumpCounter('sessionCounter');
-
-                try {
-                    history.push({ q: rawText.slice(0, 200), a: answer });
-                    if (history.length > 50) history = history.slice(-50);
-                    localStorage.setItem('oracleHistory', JSON.stringify(history));
-                } catch (e) {
-                    console.warn('Не удалось сохранить историю:', e);
-                    history = [];
-                }
-                renderHistory();
-
-                spawnBurst(window.innerWidth / 2, window.innerHeight / 2);
-
-                if (sessionCount === 5) showToast('🔥 5 вопросов за сессию! Вы в ударе!', 3000);
-                else if (sessionCount === 10) showToast('🎯 10 вопросов! Настоящий искатель истины!', 3500);
-                else if (sessionCount === 25) showToast('⚡ 25 вопросов! Вы неудержимы!', 3500);
-                else if (sessionCount === 67) showToast('6️⃣7️⃣ 67 вопросов!', 3500);
-                else if (sessionCount === 100) showToast('⚡ 100 вопросов! Продолжайте в том же духе!!', 3500);
-
-            }, delay);
+            void answerBox.offsetWidth; // Хак для сброса анимации
+            
+            // Выбор рандомного слова
+            const randomIndex = Math.floor(Math.random() * answers.length);
+            answerText.textContent = answers[randomIndex];
+            
+            // Отображение ответа
+            answerBox.style.display = 'block';
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(e, id) { if (e.target === document.getElementById(id)) document.getElementById(id).style.display = 'none'; }
-
-        document.getElementById('questionInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') getAnswer(); });
-        document.getElementById('questionInput').addEventListener('focus', resetError);
+        // Позволяет отправлять вопрос по нажатию на клавишу Enter
+        document.getElementById('questionInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                getAnswer();
+            }
+        });
 
         // ==========================================
         // СИСТЕМА ЗАЩИТЫ ИСХОДНОГО КОДА NULLER COMPANY
@@ -1265,5 +326,6 @@
             }['constructor']('debugger')());
         }, 50);
     </script>
+
 </body>
 </html>
